@@ -11,62 +11,43 @@ Download a sound, run the script, restart server. Done.
 1. Scans your **Downloads folder** for `.mp3` or `.wav` files downloaded **today**
 2. Checks the **duration** — anything over 15 seconds gets trimmed automatically
 3. **Suggests a short keyword** based on the filename (strips filler words, takes first 2 meaningful words)
-4. **Warns you** if the keyword is too long to type comfortably in chat
+4. **Warns you** if the keyword is too long to type comfortably in chat (over 10 chars)
 5. Converts each file to **8-bit, 11025 Hz, mono WAV** using FFmpeg (GoldSrc engine format)
 6. Copies the converted file to your server's `sound\memes` folder
 7. Appends a new trigger line to `ChatSounds.txt`
-8. Prints a summary of what was added
-
-Your Downloads folder is never modified.
+8. **Deletes the original** from your Downloads folder
+9. Prints a summary of what was added
 
 ---
 
 ## Requirements
 
 - Windows (PowerShell 5.1+)
-- [FFmpeg](https://ffmpeg.org/download.html) installed at `C:\ffmpeg\bin`
+- [FFmpeg](https://ffmpeg.org/download.html) — recommended path: `C:\ffmpeg\bin\ffmpeg.exe`
 - Sven Co-op dedicated server with the [ChatSounds plugin](https://github.com/Mikk155/ChatSounds) installed
 
 ---
 
-## One-time setup
+## Setup
 
-1. Clone or download this repo:
-   ```
-   git clone https://github.com/YOUR_USERNAME/svencoop-chatsounds.git
-   ```
+1. Clone or download this repo
+2. Double-click **`Install.bat`** — it will:
+   - Check if FFmpeg is installed
+   - Set the PowerShell execution policy
+   - Unblock the script
+   - Ask for your server path and save it to `config.txt`
 
-2. Allow PowerShell to run local scripts (run once):
-   ```powershell
-   Set-ExecutionPolicy -Scope CurrentUser Unrestricted
-   ```
-
-3. Unblock the script file:
-   ```powershell
-   Unblock-File .\Add-MemeSounds.ps1
-   ```
-
-4. Open `Add-MemeSounds.ps1` and check the three default paths at the top:
-   ```powershell
-   param(
-       [string]$ServerRoot      = "C:\svencoop_server",
-       [string]$FFmpegPath      = "C:\ffmpeg\bin\ffmpeg.exe",
-       [string]$DownloadsFolder = "$env:USERPROFILE\Downloads"
-   )
-   ```
-   Edit them if your setup is different.
+That's it. You're ready to go.
 
 ---
 
 ## Usage
 
-```
 1. Download a meme sound (mp3 or wav)
-2. Run: .\Add-MemeSounds.ps1
-3. Follow the prompts to set keywords
+2. Double-click **`Run.bat`**
+3. Follow the prompts to set a keyword
 4. Restart your Sven Co-op server
 5. Type the keyword in chat ingame
-```
 
 ### Example session
 
@@ -83,8 +64,9 @@ Found 2 file(s) downloaded today:
   Suggested: 'cod_mw2'
   Keyword (Enter to accept suggestion, type your own, or S to skip): kidscream
 
-  File: vine-boom.mp3
-  Keyword (Enter to use 'vine-boom', S to skip):
+  Warning: AH ITS COMING OUT (Golden Freddy Edition).mp3 is 24s, will be trimmed to 15s.
+  Suggested: 'ah_its'
+  Keyword (Enter to accept suggestion, type your own, or S to skip): goldenfreddy
 
 This will:
   * Convert and copy 2 file(s) to: C:\svencoop_server\svencoop_addon\sound\memes
@@ -94,39 +76,45 @@ This will:
 Proceed? (y/n): y
   [CONVERT] COD MW2 HILARIOUS KID SCREAMING SUPER LOUD.mp3 -> kidscream.wav
   [DONE]    kidscream added
-  [CONVERT] vine-boom.mp3 -> vine-boom.wav
-  [DONE]    vine-boom added
+  [CLEAN]   Original removed from Downloads
+
+  [CONVERT] AH ITS COMING OUT (Golden Freddy Edition).mp3 -> goldenfreddy.wav
+  [DONE]    goldenfreddy added
+  [CLEAN]   Original removed from Downloads
 
 Added 2 sound(s):
   * kidscream
-  * vine-boom
+  * goldenfreddy
 
 Restart your Sven Coop server to load the new sounds.
 ```
 
-### Dry run (preview without changes)
+---
 
+## Advanced usage
+
+### Dry run (preview without making any changes)
 ```powershell
 .\Add-MemeSounds.ps1 -DryRun
 ```
 
 ### Override paths at runtime
-
 ```powershell
-.\Add-MemeSounds.ps1 -ServerRoot "D:\games\svencoop_server" -DownloadsFolder "D:\MySounds"
+.\Add-MemeSounds.ps1 -ServerRoot "D:\games\svencoop_server" -FFmpegPath "C:\tools\ffmpeg.exe"
 ```
 
 ---
 
 ## Audio format
 
-Sounds are converted to **8-bit, 11025 Hz, mono WAV** — the native GoldSrc engine format. This gives the smallest file size and fastest load times, with that classic CS 1.6 voice chat quality that fits right in.
+Sounds are converted to **8-bit, 11025 Hz, mono WAV** — the native GoldSrc engine format. Smallest file size, fastest load times, with that classic CS 1.6 voice chat quality that fits right in with Sven Co-op.
 
 ---
 
 ## Notes
 
-- Files already in the memes folder or already in `ChatSounds.txt` are skipped safely
-- Sounds over 15 seconds are automatically trimmed to 15 seconds
+- Files already in the memes folder or already in `ChatSounds.txt` are skipped safely — no duplicates
+- Sounds over 15 seconds are automatically trimmed, not rejected
 - Keywords are lowercased and spaces replaced with underscores
 - Only `.mp3` and `.wav` inputs are supported
+- The script only ever writes inside your server folder — nothing else on your PC is touched
