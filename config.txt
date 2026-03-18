@@ -1,0 +1,5 @@
+# Sven Coop ChatSounds - Config
+# Edit these paths to match your setup
+
+ServerRoot=C:\svencoop_server
+FFmpegPath=C:\ffmpeg\bin\ffmpeg.exe

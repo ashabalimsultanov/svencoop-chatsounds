@@ -204,6 +204,11 @@ foreach ($item in $ToProcess) {
         continue
     }
 
+    # Ensure file ends with a newline before appending
+    $FileContent = Get-Content $ChatSoundsFile -Raw
+    if ($FileContent -and -not $FileContent.EndsWith("`n")) {
+        Add-Content -Path $ChatSoundsFile -Value ""
+    }
     Add-Content -Path $ChatSoundsFile -Value "$Keyword memes/$OutputName"
     Write-Host "  [DONE]    $Keyword added" -ForegroundColor Green
 
