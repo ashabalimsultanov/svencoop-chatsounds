@@ -206,6 +206,11 @@ foreach ($item in $ToProcess) {
 
     Add-Content -Path $ChatSoundsFile -Value "$Keyword memes/$OutputName"
     Write-Host "  [DONE]    $Keyword added" -ForegroundColor Green
+
+    # Delete original from Downloads
+    Remove-Item $File.FullName -Force
+    Write-Host "  [CLEAN]   Original '$($File.Name)' removed from Downloads" -ForegroundColor DarkGray
+
     $Added += $Keyword
 }
 
